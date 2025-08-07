@@ -71,11 +71,41 @@ const validateAWSCredentials = () => {
 // Call validation before creating AWS clients
 validateAWSCredentials();
 
-// Middleware - Updated CORS to allow both frontend origins
-app.use(cors({ 
-  origin: ["http://localhost:3000", "http://localhost:3001"],
-  credentials: true 
-}));
+// Middleware - Updated CORS to allow both local and production origins
+const allowedOrigins = [
+  "http://localhost:3000",
+  "http://localhost:3001",
+  "https://ggu-btech-form-f1.vercel.app", // Your frontend Vercel URL
+  "https://ggu-btech-form-f1.vercel.app/student", // Alternative frontend URL
+  "https://ggu-btech-form-f1.vercel.app", // Based on your repo name
+  /^https:\/\/.*\.vercel\.app$/, // Allow any Vercel app domain
+];
+
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      // Allow requests with no origin (like mobile apps or curl requests)
+      if (!origin) return callback(null, true);
+
+      // Check if origin is in allowed list or matches pattern
+      const isAllowed = allowedOrigins.some((allowedOrigin) => {
+        if (typeof allowedOrigin === "string") {
+          return allowedOrigin === origin;
+        } else if (allowedOrigin instanceof RegExp) {
+          return allowedOrigin.test(origin);
+        }
+        return false;
+      });
+
+      if (isAllowed) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
+    credentials: true,
+  })
+);
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
