@@ -204,8 +204,8 @@ const uploadToS3 = async (buffer, fileName, mimeType) => {
 
 // Admin credentials and JWT setup (from admin service)
 const ADMIN_CREDENTIALS = {
-  username: "admin",
-  password: "admin123",
+  username: "OfficialAdmin",
+  password: "japrra@123",
 };
 
 const JWT_SECRET = process.env.JWT_SECRET || "your-secret-key-for-development";
